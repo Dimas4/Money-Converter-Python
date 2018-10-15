@@ -1,0 +1,7 @@
+database:
+  type: postgresql
+  username: test
+  password: testtest
+  host: localhost
+  db_name: django_db
+url: http://www.nbrb.by/API/ExRates/Rates?Periodicity=0

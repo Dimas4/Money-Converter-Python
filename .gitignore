@@ -1,0 +1,7 @@
+.idea/
+venv
+*.pyc 
+*__pycache__/*
+*__pycache__*
+currency___jb_old___
+test.py

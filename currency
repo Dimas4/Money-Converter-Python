@@ -1,0 +1,47 @@
+#!/usr/bin/env python
+
+import yaml
+import sys
+
+from initialize_backend.initialize_backend import initialize
+from logic.logic_start import get_data
+from datetime import datetime
+
+
+with open('config.yaml', 'r') as file:
+    config = yaml.load(file)
+    db_config = config['database']
+    url = config['url']
+
+engine, session, Money = initialize(db_config['type'], db_config['username'],
+                                    db_config['password'], db_config['host'],
+                                    db_config['db_name'])
+
+argv = sys.argv[1:]
+
+if len(argv) != 3:
+    print('Введены некоректные значения')
+    exit()
+
+data = session.query(Money).all()
+
+if datetime.fromtimestamp(float(data[0].date)).strftime('%Y %m %d') != datetime.now().strftime('%Y %m %d'):
+    print('Пожалуйста, подождите. Идет обновление курса валют')
+    get_data(session, Money, url)
+    print('Обновление прошло успешно')
+
+belarus_money, foreign_currency = argv[0], argv[2]
+
+value = None
+
+for cur in data:
+    if cur.currency == foreign_currency:
+        value = cur.price
+        break
+
+if not value:
+    print('Введена некотектная валюта')
+    exit()
+
+result = round(float(belarus_money) / value, 2)
+print('{} рублей = {} {}'.format(belarus_money, result, foreign_currency))
